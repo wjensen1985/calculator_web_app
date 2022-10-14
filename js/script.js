@@ -45,6 +45,7 @@ class Calculator {
         console.log(this.current_num);
 
         let res;
+        let places = 10;
         switch(temp_oper){
             case "+":
                 console.log("add");
@@ -56,12 +57,12 @@ class Calculator {
                 break;
             case "÷":
                 res = (temp/1.0) / (this.current_num/1.0);
-                //rounding error/bug -> 0.000000001 thing, char limit on result
+                res = Math.round( ( res + Number.EPSILON ) * (10**places) ) / (10**places);
                 console.log("div");
                 break;
             case "*":
                 res = (temp/1.0) * (this.current_num/1.0);
-                //rounding error/bug -> 0.000000001 thing, char limit on result
+                res = Math.round( ( res + Number.EPSILON ) * (10**places) ) / (10**places);
                 console.log("mult");
                 break;
             default:
@@ -70,34 +71,27 @@ class Calculator {
 
         this.prev_num = this.prev_num + this.current_num + "=";
         this.current_num = res;
-        // change this.nums from string to numbers and complete operation
-        // then update display (remember to update lower and upper w/correct)
-        // check for operation used
-        // check for last char being operation and then act accordingly
-        //      also with above set operation_used = false to reset after equals press
+
         this.operation_used2 = false;
         this.digits_before_decimal = 0;
         this.decimal_used = false;
         this.update_display();
-        //******what to do about after pressing equals and then start typing numbers again
-        //or operations, they just append to answer-->change this---think operations works,
-        //just numbers are broken
-        //also for if answer has decimal in it
-        //orbeginning new number with decimal?????--works
+
     }
 
     operation(operation){
         if(!this.operation_used2){
             this.prev_num = this.current_num + operation;
+
             this.operation_used = true;
             this.operation_used2 = true;
             this.decimal_used = false;
-            // change this.nums from string to numbers and complete operation
-            // then update display (remember to update lower and upper w/correct)
+
             this.update_display();
         } else{
             console.log("operation already input error");
             //error message to interface/user
+            // need new div in html for this?(error messages to user)
         }
     }
 
@@ -110,7 +104,6 @@ class Calculator {
         }
         if(number == "." && this.decimal_used == true){
             return 0; 
-            //give some error message/error sign?
         } else if(number == "." && this.decimal_used == false) {
             this.current_num += number;
             this.decimal_used = true;
@@ -130,8 +123,15 @@ class Calculator {
         //comma spacing -> use splice and loop for amount of commas needed
         //what to do for result?? -> do comma spacing in equals function?
 
+        //can use digits before decimal somehow??
+        //  might need to store previous number digits before decimal?
+        // or dont use at all and just do it with string parsing--(add char imput limit) then
+        //      string parsing wont have risk of taking long process time & can get rid of digits before decimal
+        //          and avoid more variables created to keep track of/use/add to resets
+
         //for commas, make sure to check for decimal used, and then also make sure to check
         //if there is an operation character in string
+        // also have to do comma processing on prev_text (will have operation & equals w/2 nums in between)
         this.current_text.innerText = this.current_num;
         this.prev_text.innerText = this.prev_num;
     }
